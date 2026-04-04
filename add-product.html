@@ -67,7 +67,9 @@ button{
 
 <input type="text" id="name" placeholder="Product Name">
 <input type="number" id="price" placeholder="Price">
-<input type="text" id="image" placeholder="Image URL">
+
+<!-- 🔥 IMAGE UPLOAD -->
+<input type="file" id="imageFile">
 
 <input type="text" id="size" placeholder="Size (S,M,L,XL)">
 <textarea id="desc" placeholder="Product Description"></textarea>
@@ -87,19 +89,39 @@ async function addProduct(){
 
 let name = document.getElementById("name").value;
 let price = document.getElementById("price").value;
-let image = document.getElementById("image").value;
+let file = document.getElementById("imageFile").files[0];
 let size = document.getElementById("size").value;
 let desc = document.getElementById("desc").value;
 
-if(!name || !price || !image){
+if(!name || !price || !file){
 alert("Name, price, image jaruri hai");
 return;
 }
 
+// 🔥 upload image
+let fileName = Date.now() + "-" + file.name;
+
+let { data, error } = await supabase.storage
+  .from("products") // ⚠️ bucket name
+  .upload(fileName, file);
+
+if(error){
+alert("Image upload failed");
+return;
+}
+
+// 🔥 get public URL
+let { data: urlData } = supabase.storage
+  .from("products")
+  .getPublicUrl(fileName);
+
+let imageUrl = urlData.publicUrl;
+
+// 🔥 save product
 await supabase.from("products").insert([{
 name: name,
 price: price,
-image: image,
+image: imageUrl,
 size: size,
 description: desc
 }]);
@@ -109,9 +131,10 @@ alert("Product Added ✅");
 // clear
 document.getElementById("name").value="";
 document.getElementById("price").value="";
-document.getElementById("image").value="";
+document.getElementById("imageFile").value="";
 document.getElementById("size").value="";
 document.getElementById("desc").value="";
+
 }
 
 </script>
