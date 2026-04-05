@@ -39,7 +39,7 @@ body::before{
   width:100%;
   border-radius:10px;
 }
-input, textarea{
+input, select, textarea{
   width:100%;
   padding:12px;
   margin:8px 0;
@@ -69,6 +69,11 @@ button{
 
 <div class="product" id="productBox"></div>
 
+<!-- ✅ SIZE SELECT -->
+<select id="size">
+  <option value="">Select Size</option>
+</select>
+
 <h3>Enter Details</h3>
 
 <input type="text" id="name" placeholder="Your Name">
@@ -82,44 +87,59 @@ button{
 
 <script>
 
-// ✅ FIXED SUPABASE CLIENT
-const { createClient } = supabase;
-
-const supabaseClient = createClient(
-  "https://katbdbzoufiblnnsoxkk.supabase.co",
-  "sb_publishable_--fdpQMmSlUyt2ywjUErgQ_LXGvQH-a"
+// ✅ SUPABASE CONNECT
+const supabase = window.supabase.createClient(
+"https://katbdbzoufiblnnsoxkk.supabase.co",
+"sb_publishable_--fdpQMmSlUyt2ywjUErgQ_LXGvQH-a"
 );
 
-// 🔥 GET PRODUCT
+// ✅ GET PRODUCT
 const product = JSON.parse(localStorage.getItem("product"));
 
-// 🔥 SHOW PRODUCT
+// ✅ SHOW PRODUCT + SIZE
 if(product){
+
+// product show
 document.getElementById("productBox").innerHTML = `
 <img src="${product.image}">
 <h3>${product.name}</h3>
 <h4>₹${product.price}</h4>
 `;
+
+// size split (S,M,L → array)
+if(product.size){
+let sizes = product.size.split(",");
+let options = `<option value="">Select Size</option>`;
+
+sizes.forEach(s=>{
+options += `<option value="${s.trim()}">${s.trim()}</option>`;
+});
+
+document.getElementById("size").innerHTML = options;
+}
+
 }else{
 document.getElementById("productBox").innerHTML = "<h3>No Product Found</h3>";
 }
 
-// 🔥 PLACE ORDER
+// ✅ ORDER FUNCTION
 async function placeOrder(){
 
 let name = document.getElementById("name").value;
 let mobile = document.getElementById("mobile").value;
 let address = document.getElementById("address").value;
 let pincode = document.getElementById("pincode").value;
+let size = document.getElementById("size").value;
 
-if(!name || !mobile || !address || !pincode){
-alert("Sab fill kar bhai");
+if(!name || !mobile || !address || !pincode || !size){
+alert("Sab fill kar bhai + size select kar");
 return;
 }
 
-const { error } = await supabaseClient.from("orders").insert([{
+const { error } = await supabase.from("orders").insert([{
 product_name: product.name,
 price: product.price,
+size: size, // ✅ SIZE SAVE
 name: name,
 mobile: mobile,
 address: address,
@@ -136,10 +156,7 @@ return;
 
 alert("Order Placed ✅");
 
-// clear product
 localStorage.removeItem("product");
-
-// redirect
 window.location.href = "index.html";
 }
 
