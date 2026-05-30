@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banner Control</title>
+
+<style>
+body{
+    margin:0;
+    padding:15px;
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+}
+
+.box{
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+h2{
+    text-align:center;
+    margin-top:0;
+}
+
+select{
+    width:100%;
+    height:45px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:0 10px;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    height:45px;
+    border:none;
+    border-radius:8px;
+    background:green;
+    color:#fff;
+    font-size:16px;
+}
+
+.preview{
+    margin-top:20px;
+    background:#0b8f4d;
+    color:#fff;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Banner Control</h2>
+
+<select id="bannerType">
+    <option value="winning">🏆 Winning</option>
+    <option value="ads">📢 Ads</option>
+    <option value="rates">💰 Rates</option>
+</select>
+
+<button onclick="saveType()">Save</button>
+
+<div class="preview" id="preview">
+    🏆 Winning Banner Preview
+</div>
+
+</div>
+
+<script>
+const select = document.getElementById("bannerType");
+const preview = document.getElementById("preview");
+
+select.addEventListener("change", () => {
+
+    if(select.value === "winning"){
+        preview.innerHTML =
+        "🏆 Winning Banner Preview";
+    }
+
+    if(select.value === "ads"){
+        preview.innerHTML =
+        "📢 Ads Banner Preview";
+    }
+
+    if(select.value === "rates"){
+        preview.innerHTML =
+        "💰 Rates Banner Preview";
+    }
+
+});
+
+function saveType(){
+    localStorage.setItem(
+        "bannerType",
+        select.value
+    );
+
+    alert("Saved");
+}
+</script>
+
+</body>
+</html>
